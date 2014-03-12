@@ -21,6 +21,7 @@ import io.netty.util.ReferenceCountUtil;
 import org.apache.log4j.Logger;
 
 import com.liu.helper.Configuration;
+import com.liu.message.EnDecryptor;
 
 public class MessageServerHandler extends ChannelInboundHandlerAdapter {
     public static final Logger logger = Logger.getLogger(MessageServerHandler.class);
@@ -30,6 +31,7 @@ public class MessageServerHandler extends ChannelInboundHandlerAdapter {
     private HttpRequest request;
     /** Buffer that stores the response content */
     private final StringBuilder buf = new StringBuilder();
+    private static Configuration conf = new Configuration();
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
@@ -83,8 +85,12 @@ public class MessageServerHandler extends ChannelInboundHandlerAdapter {
                 }
 
                 if (msg instanceof LastHttpContent) {
-                    String jsonInput = buf.toString();
-                    logger.debug("Input json: " + jsonInput);
+                    String logInput = buf.toString();
+                    logger.debug("Input json: " + logInput);
+                    
+                    String jsonInput = EnDecryptor.decrypt(logInput, conf.getCryptKey());
+                    if(jsonInput == null)
+                    	logger.error("Decrypt failed," + jsonInput);
 
                     InputHandlerPool.submit(ctx.channel(), jsonInput, isKeepAlive(request));
                 }

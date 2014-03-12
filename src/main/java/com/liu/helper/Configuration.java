@@ -58,4 +58,8 @@ public class Configuration {
     public String getMQQueueName() {
     	return properties.getProperty("mq_queuename");
     }
+    
+    public String getCryptKey() {
+    	return properties.getProperty("crypt_key");
+    }
 }
