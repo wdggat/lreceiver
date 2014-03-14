@@ -28,7 +28,7 @@ public class QueueHelperTest {
 		msg.setOccurTime(System.currentTimeMillis());
 		msg.setSubject("邮件subject_test");
 		List<String> to = new ArrayList<String>();
-		to.add("to_1");
+		to.add("wdggat@163.com");
 		msg.setTo(to);
 		msg.setUserId("userid_001");
 		return msg;
@@ -37,9 +37,13 @@ public class QueueHelperTest {
 	public static void main(String args[]){
 		PropertyConfigurator.configure(Configuration.DEFAULT_CONF_PATH);
 		if(QueueHelper.init()){
-			AppMessage msg = makeAppMessage();
-			if(QueueHelper.enqueue(msg))
-				System.out.println("Enqueued: " + msg);
+			for(int i = 0; i < 1; i++){
+			    AppMessage msg = makeAppMessage();
+			    msg.setUserId("userid_" + i);
+			    if(QueueHelper.enqueue(msg))
+				    System.out.println("Enqueued: " + msg);
+			}
+//			QueueHelper.close();
 		}
 		
 	}

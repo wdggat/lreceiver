@@ -14,7 +14,7 @@ public class EnDecryptorTest {
 	public void testEncrypt() throws Exception {
 		String origText = "abcde12345";
 		String encrypted = EnDecryptor.encrypt(origText, KEY);
-		System.out.println(encrypted);
+//		System.out.println(encrypted);
 		String decrypted = EnDecryptor.decrypt(encrypted, KEY);
 		assertEquals(origText, decrypted);
 	}
