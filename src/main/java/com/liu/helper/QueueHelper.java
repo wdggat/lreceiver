@@ -45,7 +45,7 @@ public class QueueHelper {
 	public static void close() {
 		try {
 			producer.close();
-			session.commit();
+//			session.commit();
 			conn.close();
 		} catch (Exception e) {
 			logger.error("MQ failed to close, ", e);
