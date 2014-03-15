@@ -3,7 +3,10 @@ package com.liu.message;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.apache.log4j.Logger;
+
 public class EnDecryptor {
+	private static final Logger logger = Logger.getLogger(EnDecryptor.class);
 	public static String decrypt(String src, String key) {
 		try {
 			if (key == null) {
@@ -17,16 +20,11 @@ public class EnDecryptor {
 			Cipher cipher = Cipher.getInstance("AES");
 			cipher.init(Cipher.DECRYPT_MODE, keySpec);
 			byte[] encrypted1 = hex2byte(src);
-			try {
-				byte[] original = cipher.doFinal(encrypted1);
-				String originalString = new String(original);
-				return originalString;
-			} catch (Exception e) {
-				System.out.println(e.toString());
-				return null;
-			}
+			byte[] original = cipher.doFinal(encrypted1);
+			String originalString = new String(original);
+			return originalString;
 		} catch (Exception ex) {
-			System.out.println(ex.toString());
+			logger.error("Exception when decrypt text: " + src + ", KEY: " + key);
 			return null;
 		}
 	}

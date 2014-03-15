@@ -89,14 +89,19 @@ public class MessageServerHandler extends ChannelInboundHandlerAdapter {
                     logger.debug("Input json: " + logInput);
                     
                     String jsonInput = EnDecryptor.decrypt(logInput, conf.getCryptKey());
-                    if(jsonInput == null)
-                    	logger.error("Decrypt failed," + jsonInput);
+                    if(jsonInput == null) {
+                    	logger.error("Decrypt failed," + logInput);
+                    	NettyResponse.write(ctx.channel(), Configuration.RES_CODE_SERVER_ERROR, "Decrypt failed.", request);
+                    	return;
+                    }
+                    logger.debug("decrypted: " + jsonInput);
 
                     InputHandlerPool.submit(ctx.channel(), jsonInput, isKeepAlive(request));
                 }
             }
         } catch (Throwable e) {
-            logger.info("Error occurred in channelRead", e);
+            logger.error("Error occurred in channelRead", e);
+            NettyResponse.write(ctx.channel(), Configuration.RES_CODE_SERVER_ERROR, "server error.", request);
         } finally {
             ReferenceCountUtil.release(msg);
         }
