@@ -1,38 +1,35 @@
 package com.liu.message;
 
-import org.apache.commons.lang.StringUtils;
-
 public enum DataType {
-	HEAD("h"),
-	START("s"),
-	REGIST("r"),
-	EVENT("e"),
-	MESSAGE("m"),
-	CLOSE("c"),
-	NULL("");
-	private final String symbal;
-	DataType(String symbal) {
-		this.symbal = symbal;
+	NONE(-1), REGIST(1), LOGIN(2), NEW_MSG(3), REPLY(4), QUICK_MSG(5), PASSWORD_FORGET(6), PASSWORD_CHANGE(7);
+	private int code;
+
+	private DataType(int code) {
+		this.code = code;
 	}
-	public String getValue() {
-		return symbal;
+	
+	public int getValue() {
+		return code;
 	}
-	public static DataType valueOfSymbal(String symbal) {
-		if (StringUtils.isBlank(symbal)) { 
-			return DataType.NULL;
-		} else if (symbal.equals("h")) {
-			return DataType.HEAD;
-		} else if (symbal.equals("s")) {
-			return DataType.START;
-		} else if (symbal.equals("r")) {
-			return DataType.REGIST;
-		} else if (symbal.equals("e")) {
-			return DataType.EVENT;
-		} else if (symbal.equals("m")) {
-			return DataType.MESSAGE;
-		} else if (symbal.equals("c")) {
-			return DataType.CLOSE;
+
+	public static DataType getByValue(int code) {
+		switch (code) {
+		case 1:
+			return REGIST;
+		case 2:
+			return LOGIN;
+		case 3:
+			return NEW_MSG;
+		case 4:
+			return REPLY;
+		case 5:
+			return QUICK_MSG;
+		case 6:
+			return PASSWORD_FORGET;
+		case 7:
+			return PASSWORD_CHANGE;
+		default:
+			return NONE;
 		}
-		return DataType.NULL;
 	}
 }

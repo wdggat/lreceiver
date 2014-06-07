@@ -4,7 +4,7 @@ import org.apache.log4j.Logger;
 
 import com.liu.helper.Configuration;
 import com.liu.helper.QueueHelper;
-import com.liu.message.AppMessage;
+import com.liu.message.Message;
 import com.liu.message.Validator;
 
 public class Dispatcher {
@@ -17,7 +17,7 @@ public class Dispatcher {
                      "Invalid json");
         }
         
-        AppMessage msg = AppMessage.getFromInputJson(inputJson);
+        Message msg = Message.getFromInputJson(inputJson);
         if (msg == null) {
             logger.debug("Invalid input parameters, can't parse to ShortMsgRequest");
             return NettyResponse.genJson(Configuration.RES_CODE_INPUT_INVALID,

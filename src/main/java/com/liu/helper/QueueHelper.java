@@ -11,7 +11,7 @@ import org.apache.activemq.ActiveMQMessageProducer;
 import org.apache.activemq.ActiveMQSession;
 import org.apache.log4j.Logger;
 
-import com.liu.message.AppMessage;
+import com.liu.message.Message;
 
 public class QueueHelper {
 	private static final Logger logger = Logger.getLogger(QueueHelper.class);
@@ -52,9 +52,9 @@ public class QueueHelper {
 		}
 	}
 
-	public static boolean enqueue(AppMessage msg) {
+	public static boolean enqueue(Message msg) {
 		try {
-			TextMessage textMessage = session.createTextMessage(msg.toJsonStr());
+			TextMessage textMessage = session.createTextMessage(msg.toJson());
 			producer.send(textMessage);
 //			session.commit();
 		} catch (Exception e) {
