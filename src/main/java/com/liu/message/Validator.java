@@ -9,8 +9,8 @@ public class Validator {
     
     public static boolean checkInputJson(String inputJson) {
         try {
-            Message appMsg = JSON.parseObject(inputJson, Message.class);
-            return appMsg != null;
+            Request req = JSON.parseObject(inputJson, Request.class);
+            return req != null;
         } catch (Exception e) {
             logger.info("Exception occurs in checkInputJson: " + inputJson, e);
             return false;

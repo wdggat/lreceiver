@@ -1,33 +1,52 @@
 package com.liu.message;
 
+import java.util.HashMap;
 import java.util.Map;
 
-/*
- *      "dataType": "e",
-        "sessionUuid": "1234-342423-232",
-        "eventId": "email",
-        "occurTime", 2l,
-        "costTime":2l,
-        "userId": ""
-        "latitude": 2.2f,
-        "longitude": -2.2f,
-        "to":"...",
-        "content":"...",
-        "attributes": {
-            "subject": "...",
-            "key2": "value2"
-         }
- */
+import com.alibaba.fastjson.JSON;
 
 public class Event {
-	private String sessionUuid;
-	private String eventId;
-	private long occurTime;
-	private long costTime;
-	private String userId;
-	private float latitude;
-	private float longitude;
-	private String to;
-	private String content;
-	private Map<String, String> attributes;
+	public static final String EMAIL = "EMAIL";
+	public Event() {}
+
+	public Event(DataType dataType) {
+		this.dataType = dataType;
+		entrys = new HashMap<String, String>();
+	}
+
+	private DataType dataType;
+	private Map<String, String> entrys;
+
+	public DataType getDataType() {
+		return dataType;
+	}
+
+	public void setDataType(DataType dataType) {
+		this.dataType = dataType;
+	}
+
+	public Map<String, String> getEntrys() {
+		return entrys;
+	}
+
+	public void setEntrys(Map<String, String> entrys) {
+		this.entrys = entrys;
+	}
+
+	public void putEntry(String key, String value) {
+		entrys.put(key, value);
+	}
+	
+	public String getEntry(String key) {
+		return entrys.get(key);
+	}
+	
+	public String toJson() {
+		return JSON.toJSONString(this);
+	}
+	
+	@Override
+	public String toString() {
+		return toJson();
+	}
 }

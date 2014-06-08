@@ -1,7 +1,5 @@
 package com.liu.netty;
 
-import static com.liu.helper.Configuration.RES_CODE;
-import static com.liu.helper.Configuration.RES_ERRMSG;
 import static io.netty.buffer.Unpooled.copiedBuffer;
 import static io.netty.handler.codec.http.HttpHeaders.isKeepAlive;
 import static io.netty.handler.codec.http.HttpHeaders.Names.CONNECTION;
@@ -21,23 +19,25 @@ import io.netty.util.CharsetUtil;
 
 import org.apache.log4j.Logger;
 
+import com.liu.message.Response;
+
 public class NettyResponse {
     private static Logger logger = Logger.getLogger(NettyResponse.class);
 
     public static void write(Channel channel, int code,
                              String errMsg, HttpRequest request) {
-        String responseContent = genJson(code, errMsg);
-        write(channel, responseContent, request);
+    	Response response = genResponse(code, errMsg);
+        write(channel, response, request);
     }
 
-    public static void write(Channel channel, String responseContent,
+    public static void write(Channel channel, Response response,
                              HttpRequest request) {
-        write(channel, responseContent, isKeepAlive(request));
+        write(channel, response, isKeepAlive(request));
     }
 
-    public static void write(Channel channel, String responseContent,
+    public static void write(Channel channel, Response res,
                              boolean isKeepAlive) {
-        ByteBuf buf = copiedBuffer(responseContent, CharsetUtil.UTF_8);
+        ByteBuf buf = copiedBuffer(res.toString(), CharsetUtil.UTF_8);
 
         // Decide whether to close the connection or not
         boolean close = isKeepAlive;
@@ -60,11 +60,8 @@ public class NettyResponse {
         }
     }
 
-    public static String genJson(int code, String errMsg) {
-        return String.format(
-                "{\"%s\":%d,\"%s\":\"%s\"}",
-                RES_CODE, code,
-                RES_ERRMSG, errMsg);
+    public static Response genResponse(int code, String errMsg) {
+        return new Response(code, errMsg);
     }
 }
 

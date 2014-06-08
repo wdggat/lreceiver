@@ -8,6 +8,7 @@ import java.util.concurrent.Executors;
 import org.apache.log4j.Logger;
 
 import com.liu.helper.QueueHelper;
+import com.liu.message.Response;
 
 public class InputHandlerPool {
     private static Logger logger = Logger.getLogger(InputHandlerPool.class);
@@ -46,8 +47,8 @@ public class InputHandlerPool {
 
         @Override
         public void run() {
-            String jsonResponse = Dispatcher.dispatchMsg(this.inputJson);
-            NettyResponse.write(this.channel, jsonResponse, this.isKeepAlive);
+            Response res = Dispatcher.dispatchMsg(this.inputJson);
+            NettyResponse.write(this.channel, res, this.isKeepAlive);
         }
     }
 }
