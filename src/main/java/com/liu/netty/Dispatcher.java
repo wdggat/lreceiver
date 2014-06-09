@@ -5,23 +5,36 @@ import org.apache.log4j.Logger;
 import com.alibaba.fastjson.JSON;
 import com.liu.helper.Configuration;
 import com.liu.helper.QueueHelper;
+import com.liu.message.DataType;
+import com.liu.message.Event;
 import com.liu.message.Message;
+import com.liu.message.Request;
 import com.liu.message.Response;
 import com.liu.message.Validator;
 
 public class Dispatcher {
     private static Logger logger = Logger.getLogger(Dispatcher.class);
 
-    public static Response dispatchMsg(String inputJson) {
+    public static Response dispatch(String inputJson) {
         if(inputJson == null || !Validator.checkInputJson(inputJson)) {
             logger.debug("Invalid json: " + inputJson);
             return NettyResponse.genResponse(Configuration.RES_CODE_INPUT_INVALID,
                      "Invalid json");
         }
         
-        Message msg = JSON.parseObject(inputJson, Message.class);
+        Request req = JSON.parseObject(inputJson, Request.class);
+        DataType dataType = req.getDataType();
+        if(dataType.isTypeEvent())
+        	return dispatchEvent(dataType, req.getJsonStr());
+        if(dataType.isTypeMessage())
+        	return dispatchMessage(dataType, req.getJsonStr());
+        return new Response(417, "Can't get data type.");
+    }
+    
+    private static Response dispatchMessage(DataType dataType, String inputContent) {
+    	Message msg = JSON.parseObject(inputContent, Message.class);
         if (msg == null) {
-            logger.debug("Invalid input parameters, can't parse to ShortMsgRequest, " + inputJson);
+            logger.debug("Invalid input parameters, can't parse to ShortMsgRequest, " + inputContent);
             return NettyResponse.genResponse(Configuration.RES_CODE_INPUT_INVALID,
                      "Invalid input parameters");
         }
@@ -42,6 +55,42 @@ public class Dispatcher {
             return NettyResponse.genResponse(Configuration.RES_CODE_SERVER_ERROR,
                      "Server error");
         }
+    }
+    
+    private static Response dispatchEvent(DataType dataType, String inputContent) {
+    	Event event = JSON.parseObject(inputContent, Event.class);
+        if (event == null) {
+            logger.debug("Invalid input parameters, can't parse to ShortMsgRequest, " + inputContent);
+            return NettyResponse.genResponse(Configuration.RES_CODE_INPUT_INVALID,
+                     "Invalid input parameters");
+        }
+        
+        if(dataType.equals(DataType.LOGIN)) {
+        	
+        } else if(dataType.equals(DataType.REGIST)) {
+        	
+        } else if(dataType.equals(DataType.PASSWORD_CHANGE)) {
+        	
+        } else if(dataType.equals(DataType.PASSWORD_FORGET)) {
+        	
+        }
+       /*        
+       try {
+            logger.debug("MSG queue in ...");
+            boolean enqueueResult = QueueHelper.enqueue(event);
+            if (enqueueResult) {
+                logger.info("$Message enqueue: " + event.toJson());
+                return NettyResponse.genResponse(Configuration.RES_CODE_SUCC, "");
+            } else {
+                logger.info("$Message enqueue failed: " + event.toJson());
+                return NettyResponse.genResponse(Configuration.RES_CODE_SERVER_ERROR,
+                         "Server error");
+            }
+        } catch (Throwable e) {
+            logger.error("Message enqueue failed due to exception", e);
+            return NettyResponse.genResponse(Configuration.RES_CODE_SERVER_ERROR,
+                     "Server error");
+        }*/
     }
 
 /*    public static boolean sendMail(MailRequest mailRequest) {

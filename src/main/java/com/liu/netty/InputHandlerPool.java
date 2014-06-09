@@ -47,7 +47,7 @@ public class InputHandlerPool {
 
         @Override
         public void run() {
-            Response res = Dispatcher.dispatchMsg(this.inputJson);
+            Response res = Dispatcher.dispatch(this.inputJson);
             NettyResponse.write(this.channel, res, this.isKeepAlive);
         }
     }

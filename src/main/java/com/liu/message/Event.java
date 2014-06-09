@@ -7,6 +7,11 @@ import com.alibaba.fastjson.JSON;
 
 public class Event {
 	public static final String EMAIL = "EMAIL";
+	public static final String USER = "USER";
+	public static final String USERNAME = "USERNAME";
+	public static final String PASSWORD = "PASSWORD";
+	public static final String USERNAME_NEW = "USERNAME_NEW";
+	public static final String USERNAME_COMFIRM = "USERNAME_CONFIRM";
 	public Event() {}
 
 	public Event(DataType dataType) {

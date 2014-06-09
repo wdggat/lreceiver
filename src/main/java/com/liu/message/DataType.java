@@ -14,22 +14,30 @@ public enum DataType {
 
 	public static DataType getByValue(int code) {
 		switch (code) {
-		case 1:
+		case 100:
 			return REGIST;
-		case 2:
+		case 101:
 			return LOGIN;
-		case 3:
+		case 1:
 			return NEW_MSG;
-		case 4:
+		case 2:
 			return REPLY;
-		case 5:
+		case 3:
 			return QUICK_MSG;
-		case 6:
+		case 102:
 			return PASSWORD_FORGET;
-		case 7:
+		case 103:
 			return PASSWORD_CHANGE;
 		default:
 			return NONE;
 		}
+	}
+	
+	public boolean isTypeEvent() {
+		return code >= REGIST.code;
+	}
+	
+	public boolean isTypeMessage() {
+		return code < REGIST.code;
 	}
 }
