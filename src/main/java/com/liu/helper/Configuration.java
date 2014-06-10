@@ -51,6 +51,22 @@ public class Configuration {
         loadConf(getDefaultConfInputStream());
     }
     
+    public String getDbDriver() {
+    	return properties.getProperty("db.driver");
+    }
+    
+    public String getMysqlUrl() {
+    	return properties.getProperty("db.url");
+    }
+    
+    public String getMysqlUsername() {
+    	return properties.getProperty("db.username");
+    }
+    
+    public String getMysqlPassword() {
+    	return properties.getProperty("db.password");
+    }
+    
     public String getMQBrokerUrl() {
     	return properties.getProperty("mq_broker");
     }

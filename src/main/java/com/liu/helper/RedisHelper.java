@@ -159,11 +159,11 @@ public class RedisHelper {
         }
     }
 
-    protected static boolean setCache(String cachePrefix, String key, List<String> values) {
+    private static boolean setCache(String cachePrefix, String key, List<String> values) {
         return setCache(cachePrefix, key, values, 0);
     }
 
-    protected static boolean setCache(String cachePrefix, String key, List<String> values, int expireSeconds) {
+    private static boolean setCache(String cachePrefix, String key, List<String> values, int expireSeconds) {
     	// Reset cache values
         if (!delCache(cachePrefix, key)) return false;
 
@@ -186,7 +186,7 @@ public class RedisHelper {
         }
     }
 
-    protected static boolean delCache(String cachePrefix, String key) {
+    private static boolean delCache(String cachePrefix, String key) {
         String realKey = cachePrefix + key;
 
         Jedis masterJedis = null;
@@ -203,7 +203,7 @@ public class RedisHelper {
         }
     }
 
-    protected static List<String> getCache(String cachePrefix, String key, int valueLength) {
+    private static List<String> getCache(String cachePrefix, String key, int valueLength) {
         String realKey = cachePrefix + key;
 
         List<String> cacheValues = new ArrayList<String>();

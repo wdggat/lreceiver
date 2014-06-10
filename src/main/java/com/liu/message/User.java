@@ -14,39 +14,33 @@ public class User {
 	private static final String SHOW_FEMALE = "妹子";
 	private static final String SHOW_GENDER_UNSET = "路人而已";
 
-	private String emailAddr;
+	private String email;
 	private int gender;
 	private String province;
 	private long birthday;
 	private String phone;
 	private String password;
+	private String uid;
 
 	public User() {
 	}
 
 	public User(String emailAddr, int gender, String province, long birthday,
-			String phone, String password) {
+			String phone, String password, String uid) {
 		super();
-		this.emailAddr = emailAddr;
+		this.email = emailAddr;
 		this.gender = gender;
 		this.province = province;
 		this.birthday = birthday;
 		this.phone = phone;
 		this.password = password;
+		this.uid = uid;
 	}
 
 	public static User fromJsonStr(String json) {
 		if (StringUtils.isEmpty(json))
-			return new User("", GENDER_UNSET, "", 0, "", "");
+			return new User("", GENDER_UNSET, "", 0, "", "", "");
 		return JSON.parseObject(json, User.class);
-	}
-
-	public String getEmailAddr() {
-		return emailAddr;
-	}
-
-	public void setEmailAddr(String emailAddr) {
-		this.emailAddr = emailAddr;
 	}
 
 	public int getGender() {
@@ -91,6 +85,22 @@ public class User {
 
 	public String toJson() {
 		return JSON.toJSONString(this);
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getUid() {
+		return uid;
+	}
+
+	public void setUid(String uid) {
+		this.uid = uid;
 	}
 
 	@Override

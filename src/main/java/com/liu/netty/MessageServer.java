@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 import com.liu.helper.Configuration;
+import com.liu.helper.JDBCHelper;
 import com.liu.helper.QueueHelper;
 
 public class MessageServer {
@@ -68,6 +69,7 @@ public class MessageServer {
             } else {
                 httpPort = Integer.parseInt(args[0]);
             }
+            Configuration conf = new Configuration();
 
             logger.info("Initializing input handler pool");
             if (!InputHandlerPool.init()) {
@@ -77,8 +79,14 @@ public class MessageServer {
             
             logger.info("Initializing QueueHelper");
             if(!QueueHelper.init()) {
-            	logger.error("Error occurred during initializing input handler pool, abort");
+            	logger.error("Error occurred during initializing queue pool, abort");
             	return;
+            }
+            
+            logger.info("Initializing JdbcHelper");
+            if(!JDBCHelper.init(conf.getDbDriver(), conf.getMysqlUrl(), conf.getMysqlUsername(), conf.getMysqlPassword())){
+                logger.error("Error occurred during initializing JdbcHelper, abort");
+                return;
             }
 
             logger.info("Starting Http server on " + httpPort);
