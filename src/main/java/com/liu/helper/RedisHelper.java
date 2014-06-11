@@ -61,6 +61,10 @@ public class RedisHelper {
     public static String getUinfoCache(String username) {
     	return get(uinfoCachePrefix + username);
     }
+    
+    public static int existUinfoCache(String username) {
+    	return exists(uinfoCachePrefix + username);
+    }
 
     private static Set<String> hkeys(String realKey) {
         Jedis masterJedis = null;

@@ -1,15 +1,18 @@
 package com.liu.netty;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.alibaba.fastjson.JSON;
 import com.liu.helper.Configuration;
 import com.liu.helper.QueueHelper;
+import com.liu.helper.RedisHelper;
 import com.liu.message.DataType;
 import com.liu.message.Event;
 import com.liu.message.Message;
 import com.liu.message.Request;
 import com.liu.message.Response;
+import com.liu.message.User;
 import com.liu.message.Validator;
 
 public class Dispatcher {
@@ -66,9 +69,19 @@ public class Dispatcher {
         }
         
         if(dataType.equals(DataType.LOGIN)) {
-        	
+        	String userJson = RedisHelper.getUinfoCache(event.getEntry(Event.USERNAME));
+        	if(!StringUtils.isEmpty(userJson)) {
+        		User user = User.fromJsonStr(userJson);
+        		if(user.getPassword().equals(event.getEntry(Event.PASSWORD)))
+        			return NettyResponse.genResponse(Configuration.RES_CODE_SUCC, "");
+        	}
+        	return NettyResponse.genResponse(Configuration.RES_CODE_INPUT_INVALID, "Username or password incorrect");
         } else if(dataType.equals(DataType.REGIST)) {
-        	
+        	if(RedisHelper.existUinfoCache(event.getEntry(Event.USERNAME)) == RedisHelper.REDIS_KEY_NOT_EXISTS) {
+        		User newUser = User.fromJsonStr(event.getEntry(Event.USER));
+        	    RedisHelper.setUinfoCache(event.getEntry(Event.USERNAME), );
+        	    
+        	}
         } else if(dataType.equals(DataType.PASSWORD_CHANGE)) {
         	
         } else if(dataType.equals(DataType.PASSWORD_FORGET)) {

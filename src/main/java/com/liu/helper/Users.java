@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
@@ -45,6 +46,14 @@ public class Users {
 			users.add(user);
 		}
 		return users;
+	}
+	
+	public static boolean addUser(User user) {
+		
+	}
+	
+	public static String generateUid(String username) {
+		return UUID.randomUUID().toString();
 	}
 	
 }
