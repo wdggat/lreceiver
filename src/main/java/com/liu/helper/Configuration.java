@@ -78,4 +78,24 @@ public class Configuration {
     public String getCryptKey() {
     	return properties.getProperty("crypt_key");
     }
+    
+    public String getMailHost163() {
+    	return properties.getProperty("mail.163.host");
+    }
+    
+    public String getMail163FromAddr() {
+    	return properties.getProperty("mail.163.from.addr");
+    }
+    
+    public String getMail163FromPassword() {
+    	return properties.getProperty("mail.163.from.password");
+    }
+    
+    public String getMailFromName() {
+    	return properties.getProperty("mail.from.name");
+    }
+    
+    public int getMail163Port() {
+    	return Integer.parseInt(properties.getProperty("mail.163.port"));
+    }
 }

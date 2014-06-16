@@ -7,8 +7,10 @@ import com.alibaba.fastjson.JSON;
 import com.liu.helper.Configuration;
 import com.liu.helper.QueueHelper;
 import com.liu.helper.RedisHelper;
+import com.liu.helper.Users;
 import com.liu.message.DataType;
 import com.liu.message.Event;
+import com.liu.message.MailSender;
 import com.liu.message.Message;
 import com.liu.message.Request;
 import com.liu.message.Response;
@@ -69,6 +71,8 @@ public class Dispatcher {
         }
         
         if(dataType.equals(DataType.LOGIN)) {
+        	if(!Validator.checkLoginEvent(event))
+        		return NettyResponse.genResponse(Configuration.RES_CODE_INPUT_INVALID, "Input invalid.");
         	String userJson = RedisHelper.getUinfoCache(event.getEntry(Event.USERNAME));
         	if(!StringUtils.isEmpty(userJson)) {
         		User user = User.fromJsonStr(userJson);
@@ -77,58 +81,33 @@ public class Dispatcher {
         	}
         	return NettyResponse.genResponse(Configuration.RES_CODE_INPUT_INVALID, "Username or password incorrect");
         } else if(dataType.equals(DataType.REGIST)) {
-        	if(RedisHelper.existUinfoCache(event.getEntry(Event.USERNAME)) == RedisHelper.REDIS_KEY_NOT_EXISTS) {
-        		User newUser = User.fromJsonStr(event.getEntry(Event.USER));
-        	    RedisHelper.setUinfoCache(event.getEntry(Event.USERNAME), );
-        	    
-        	}
+			if (RedisHelper.existUinfoCache(event.getEntry(Event.USERNAME)) == RedisHelper.REDIS_KEY_NOT_EXISTS) {
+				User newUser = User.fromJsonStr(event.getEntry(Event.USER));
+				if (Users.addUser(newUser)) {
+					return NettyResponse.genResponse(Configuration.RES_CODE_SUCC, "");
+				}
+				return NettyResponse.genResponse(Configuration.RES_CODE_SERVER_ERROR, "Sorry, 内部错误.");
+			}
+			return NettyResponse.genResponse(Configuration.RES_CODE_INPUT_INVALID, "Sorry, 此邮箱已被注册.");
         } else if(dataType.equals(DataType.PASSWORD_CHANGE)) {
-        	
+        	String username = event.getEntry(Event.USERNAME);
+        	if (RedisHelper.existUinfoCache(username) == RedisHelper.REDIS_KEY_EXISTS) {
+        		User user = User.fromJsonStr(RedisHelper.getUinfoCache(username));
+        		if (event.getEntry(Event.PASSWORD).equals(user.getPassword())) {
+        			user.setPassword(event.getEntry(Event.PASSWORD_NEW));
+        		    RedisHelper.setUinfoCache(username, user.toJson());
+        	        Users.insertOnDuplicateUser(user);
+        	        return NettyResponse.genResponse(Configuration.RES_CODE_SUCC, "");
+        		}
+        		NettyResponse.genResponse(Configuration.RES_CODE_INPUT_INVALID, "抱歉,旧密码不正确.");
+        	}
         } else if(dataType.equals(DataType.PASSWORD_FORGET)) {
-        	
+        	String to = event.getEntry(Event.USERNAME);
+        	User user = User.fromJsonStr(RedisHelper.getUinfoCache(to));
+        	MailSender.sendSimpleMail(to, "密码通知", "Your password: " + user.getPassword());
+        	return NettyResponse.genResponse(Configuration.RES_CODE_SUCC, "");
         }
-       /*        
-       try {
-            logger.debug("MSG queue in ...");
-            boolean enqueueResult = QueueHelper.enqueue(event);
-            if (enqueueResult) {
-                logger.info("$Message enqueue: " + event.toJson());
-                return NettyResponse.genResponse(Configuration.RES_CODE_SUCC, "");
-            } else {
-                logger.info("$Message enqueue failed: " + event.toJson());
-                return NettyResponse.genResponse(Configuration.RES_CODE_SERVER_ERROR,
-                         "Server error");
-            }
-        } catch (Throwable e) {
-            logger.error("Message enqueue failed due to exception", e);
-            return NettyResponse.genResponse(Configuration.RES_CODE_SERVER_ERROR,
-                     "Server error");
-        }*/
+        return NettyResponse.genResponse(Configuration.RES_CODE_INPUT_INVALID, "数据类型错误.");
     }
-
-/*    public static boolean sendMail(MailRequest mailRequest) {
-        String hostName = Configuration.MAIL_HOST_NAME;
-
-        try {
-            HtmlEmail email = new HtmlEmail();
-            email.setHostName(hostName);
-
-            email.setFrom(mailRequest.getFromAddress(), mailRequest.getFromName());
-            email.addTo(mailRequest.getTo()[0] + "@" + Configuration.MAIL_DOMAIN);
-            email.setSubject(mailRequest.getMailSubject());
-
-            // set the html message
-            email.setHtmlMsg(mailRequest.getMailContent());
-            // set the alternative message
-            email.setTextMsg("Your email client does not support HTML messages");
-
-            email.send();
-        } catch (Exception e) {
-            logger.error("Error occurred during sending email", e);
-            return false;
-        }
-
-        return true;
-    }*/
 }
 
