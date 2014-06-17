@@ -17,6 +17,7 @@ import org.apache.log4j.PropertyConfigurator;
 import com.liu.helper.Configuration;
 import com.liu.helper.JDBCHelper;
 import com.liu.helper.QueueHelper;
+import com.liu.helper.RedisHelper;
 
 public class MessageServer {
     public static final Logger logger = Logger.getLogger(MessageServer.class);
@@ -71,6 +72,9 @@ public class MessageServer {
             }
             Configuration conf = new Configuration();
 
+            logger.info("Initializing RedisHelper");
+            RedisHelper.init(conf.getRedisServerMaster(), conf.getRedisServerSlave());
+            
             logger.info("Initializing input handler pool");
             if (!InputHandlerPool.init()) {
                 logger.error("Error occurred during initializing input handler pool, abort");
