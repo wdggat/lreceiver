@@ -47,15 +47,8 @@ public class Validator {
 
 	}
 
-	public static boolean checkQuickMessage(Message msg) {
-		//TOTO
+	public static boolean checkMessage(Message msg) {
+		return msg != null;
 	}
 
-	public static boolean checkNewMsgMessage(Message msg) {
-
-	}
-
-	public static boolean checkReplyMsgMessage(Message msg) {
-		//TODO
-	}
 }

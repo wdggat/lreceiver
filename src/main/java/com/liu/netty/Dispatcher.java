@@ -38,8 +38,8 @@ public class Dispatcher {
     
     private static Response dispatchMessage(DataType dataType, String inputContent) {
     	Message msg = JSON.parseObject(inputContent, Message.class);
-        if (msg == null) {
-            logger.debug("Invalid input parameters, can't parse to ShortMsgRequest, " + inputContent);
+        if (!Validator.checkMessage(msg)) {
+            logger.debug("Invalid input content, " + inputContent);
             return NettyResponse.genResponse(Configuration.RES_CODE_INPUT_INVALID,
                      "Invalid input parameters");
         }
