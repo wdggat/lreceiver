@@ -92,7 +92,7 @@ public class MessageServer {
                 logger.error("Error occurred during initializing JdbcHelper, abort");
                 return;
             }
-
+            
             logger.info("Starting Http server on " + httpPort);
             new MessageServer(httpPort).run();
         } catch (Throwable e) {
