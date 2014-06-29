@@ -1,5 +1,8 @@
 package com.liu.netty;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -106,6 +109,15 @@ public class Dispatcher {
         	User user = User.fromJsonStr(RedisHelper.getUinfoCache(to));
         	MailSender.sendSimpleMail(to, "密码通知", "Your password: " + user.getPassword());
         	return NettyResponse.genResponse(Configuration.RES_CODE_SUCC, "");
+        } else if(dataType.equals(DataType.BAIDU_PUSH_BIND)) {
+        	String username = event.getEntry(Event.USERNAME);
+        	String baiduUserId = event.getEntry(Event.BAIDU_USERID);
+        	String baiduChannelId = event.getEntry(Event.BAIDU_CHANNELID);
+        	List<String> baiduUinfo = new ArrayList<String>();
+        	baiduUinfo.add(baiduUserId);
+        	baiduUinfo.add(baiduChannelId);
+        	if(RedisHelper.setBaiduUserCache(username, baiduUinfo))
+        		NettyResponse.genResponse(Configuration.RES_CODE_SUCC, "");
         }
         return NettyResponse.genResponse(Configuration.RES_CODE_INPUT_INVALID, "数据类型错误.");
     }

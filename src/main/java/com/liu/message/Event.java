@@ -11,6 +11,8 @@ public class Event {
 	public static final String USERNAME = "USERNAME";
 	public static final String PASSWORD = "PASSWORD";
 	public static final String PASSWORD_NEW = "PASSWORD_NEW";
+	public static final String BAIDU_USERID = "BAIDU_USERID";
+	public static final String BAIDU_CHANNELID = "BAIDU_CHANNELID";
 	public Event() {}
 
 	public Event(DataType dataType) {

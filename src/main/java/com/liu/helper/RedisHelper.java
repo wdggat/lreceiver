@@ -24,6 +24,7 @@ public class RedisHelper {
     private static final int REDIS_MSG_KEY_EXPIRE = 600;
 
     private static final String uinfoCachePrefix = "u:";
+    private static final String baiduUinfoPrefix = "bd:u:";
 
     public static void init(String redisMaster, String redisSlave) {
         init(redisMaster, REDIS_DEFAULT_PORT, redisSlave, REDIS_DEFAULT_PORT);
@@ -64,6 +65,18 @@ public class RedisHelper {
     
     public static int existUinfoCache(String username) {
     	return exists(uinfoCachePrefix + username);
+    }
+    
+    public static boolean setBaiduUserCache(String username, List<String> baiduUinfo) {
+    	return setCache(baiduUinfoPrefix, username, baiduUinfo);
+    }
+    
+    public static List<String> getBaiduUserCache(String username, int valueLength) {
+    	return getCache(baiduUinfoPrefix, username, valueLength);
+    }
+    
+    public static boolean delBaiduCache(String username) {
+    	return delCache(baiduUinfoPrefix, username);
     }
 
     private static Set<String> hkeys(String realKey) {
