@@ -24,7 +24,7 @@ public class Dispatcher {
     private static Logger logger = Logger.getLogger(Dispatcher.class);
 
     public static Response dispatch(String inputJson) {
-        if(inputJson == null || !Validator.checkInputJson(inputJson)) {
+        if(StringUtils.isEmpty(inputJson) || !Validator.checkInputJson(inputJson)) {
             logger.debug("Invalid json: " + inputJson);
             return NettyResponse.genResponse(Configuration.RES_CODE_INPUT_INVALID,
                      "Invalid json");

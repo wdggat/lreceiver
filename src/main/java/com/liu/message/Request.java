@@ -6,6 +6,9 @@ import com.liu.message.DataType;
 public class Request {
 	private DataType dataType;
 	private String jsonStr;
+	
+	public Request(){}
+	
 	public Request(DataType dataType, String jsonStr) {
 		this.dataType = dataType;
 		this.jsonStr = jsonStr;

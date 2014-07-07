@@ -18,10 +18,11 @@ import io.netty.util.AttributeKey;
 import io.netty.util.CharsetUtil;
 import io.netty.util.ReferenceCountUtil;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.liu.helper.Configuration;
-import com.liu.message.EnDecryptor;
+import com.liu.helper.CryptHelper;
 
 public class MessageServerHandler extends ChannelInboundHandlerAdapter {
     public static final Logger logger = Logger.getLogger(MessageServerHandler.class);
@@ -48,6 +49,7 @@ public class MessageServerHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
         logger.debug("Receive message in Server");
         ctx.attr(IS_AUTH).set(false);
+        boolean done = false;
         try {
             if (msg instanceof HttpRequest) {
                 HttpRequest request = this.request = (HttpRequest)msg;
@@ -61,40 +63,53 @@ public class MessageServerHandler extends ChannelInboundHandlerAdapter {
                 buf.setLength(0);
 
                 if (request.getMethod().equals(HttpMethod.GET)) {
-                    logger.debug("HTTP method GET is not supported by this URL");
+                    logger.info("HTTP method GET is not supported by this URL");
                     NettyResponse.write(ctx.channel(), Configuration.RES_CODE_INPUT_INVALID,
                              "HTTP method GET is not supported by this URL", request);
+                    done = true;
                     return;
                 }
 
                 String contentType = request.headers().get(CONTENT_TYPE);
-                if (contentType == null || !contentType.contains("application/json")) {
-                    logger.debug("Content-Type is not application/json");
+                if (contentType == null || !contentType.contains("application/x-gzip")) {
+                    logger.info("Content-Type is not application/x-gzip");
                     NettyResponse.write(ctx.channel(), Configuration.RES_CODE_INPUT_INVALID,
-                             "Content-Type is not application/json", request);
+                             "Content-Type is not application/x-gzip", request);
+                    done = true;
                     return;
                 }
             }
 
             if (msg instanceof HttpContent) {
                 logger.debug("Get Http request content");
+                if(done) {
+                	logger.debug("http head error, body dropped.");
+                	return;
+                }
+                
                 HttpContent httpContent = (HttpContent)msg;
                 ByteBuf content = httpContent.content();
                 if (content.isReadable()) {
                     buf.append(content.toString(CharsetUtil.UTF_8));
                 }
-
+                
                 if (msg instanceof LastHttpContent) {
                     String logInput = buf.toString();
                     logger.debug("Input json: " + logInput);
                     
-                    String jsonInput = EnDecryptor.decrypt(logInput, conf.getCryptKey());
-                    if(jsonInput == null) {
-                    	logger.error("Decrypt failed," + logInput);
-                    	NettyResponse.write(ctx.channel(), Configuration.RES_CODE_SERVER_ERROR, "Decrypt failed.", request);
+                    if(!checkInput(logInput)) {
+                    	NettyResponse.write(ctx.channel(), Configuration.RES_CODE_INPUT_INVALID, "Input is not a json.", request);
                     	return;
                     }
-                    logger.debug("decrypted: " + jsonInput);
+                    
+//                    String jsonInput = CryptHelper.decrypt(logInput, conf.getCryptKey());
+//                    logger.debug("decrypted: " + jsonInput);
+                    String jsonInput = logInput;
+                    if(jsonInput == null) {
+                    	logger.error("Decrypt failed," + logInput);
+                    	NettyResponse.write(ctx.channel(), Configuration.RES_CODE_INPUT_INVALID, "Decrypt failed.", request);
+                    	return;
+                    }
 
                     InputHandlerPool.submit(ctx.channel(), jsonInput, isKeepAlive(request));
                 }
@@ -111,5 +126,9 @@ public class MessageServerHandler extends ChannelInboundHandlerAdapter {
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         logger.error("Error occurred in MessageServerHandler", cause);
         ctx.close();
+    }
+    
+    private static boolean checkInput(String inputContent) {
+    	return !StringUtils.isEmpty(inputContent) && inputContent.contains("{") && inputContent.contains("}");
     }
 }
