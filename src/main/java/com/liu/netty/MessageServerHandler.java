@@ -18,11 +18,12 @@ import io.netty.util.AttributeKey;
 import io.netty.util.CharsetUtil;
 import io.netty.util.ReferenceCountUtil;
 
+import java.nio.ByteBuffer;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.liu.helper.Configuration;
-import com.liu.helper.CryptHelper;
 
 public class MessageServerHandler extends ChannelInboundHandlerAdapter {
     public static final Logger logger = Logger.getLogger(MessageServerHandler.class);
@@ -32,6 +33,7 @@ public class MessageServerHandler extends ChannelInboundHandlerAdapter {
     private HttpRequest request;
     /** Buffer that stores the response content */
     private final StringBuilder buf = new StringBuilder();
+//    private ByteBuffer buf = ByteBuffer.allocate(capacity)
     private static Configuration conf = new Configuration();
 
     @Override
@@ -97,17 +99,17 @@ public class MessageServerHandler extends ChannelInboundHandlerAdapter {
                     String logInput = buf.toString();
                     logger.debug("Input json: " + logInput);
                     
-                    if(!checkInput(logInput)) {
-                    	NettyResponse.write(ctx.channel(), Configuration.RES_CODE_INPUT_INVALID, "Input is not a json.", request);
-                    	return;
-                    }
-                    
 //                    String jsonInput = CryptHelper.decrypt(logInput, conf.getCryptKey());
 //                    logger.debug("decrypted: " + jsonInput);
                     String jsonInput = logInput;
                     if(jsonInput == null) {
                     	logger.error("Decrypt failed," + logInput);
                     	NettyResponse.write(ctx.channel(), Configuration.RES_CODE_INPUT_INVALID, "Decrypt failed.", request);
+                    	return;
+                    }
+                    
+                    if(!checkInput(jsonInput)) {
+                    	NettyResponse.write(ctx.channel(), Configuration.RES_CODE_INPUT_INVALID, "Input is not a json.", request);
                     	return;
                     }
 
