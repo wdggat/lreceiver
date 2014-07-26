@@ -6,6 +6,7 @@ import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_TYPE;
 import static io.netty.handler.codec.http.HttpResponseStatus.CONTINUE;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
@@ -24,16 +25,19 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.liu.helper.Configuration;
+import com.liu.helper.CryptHelper;
 
 public class MessageServerHandler extends ChannelInboundHandlerAdapter {
     public static final Logger logger = Logger.getLogger(MessageServerHandler.class);
     public static final String X_FORWARDED_FOR = "X-Forwarded-For";
     private static final AttributeKey<Boolean> IS_AUTH = AttributeKey.valueOf("HTTP_IS_AUTH");
+    private static final int BUFFER_SIZE = 1024 * 1024;
 
     private HttpRequest request;
     /** Buffer that stores the response content */
-    private final StringBuilder buf = new StringBuilder();
-//    private ByteBuffer buf = ByteBuffer.allocate(capacity)
+//    private final StringBuilder buf = new StringBuilder();
+    private ByteBuffer buf = ByteBuffer.allocate(BUFFER_SIZE);
+//    private ByteBuf buf = Unpooled.directBuffer();
     private static Configuration conf = new Configuration();
 
     @Override
@@ -62,7 +66,8 @@ public class MessageServerHandler extends ChannelInboundHandlerAdapter {
                 }
 
                 // Clear the buffer
-                buf.setLength(0);
+//                buf.setLength(0);
+                buf.clear();
 
                 if (request.getMethod().equals(HttpMethod.GET)) {
                     logger.info("HTTP method GET is not supported by this URL");
@@ -91,22 +96,38 @@ public class MessageServerHandler extends ChannelInboundHandlerAdapter {
                 
                 HttpContent httpContent = (HttpContent)msg;
                 ByteBuf content = httpContent.content();
+                
+                logger.debug("$content.readableBytes() = " + content.readableBytes());
                 if (content.isReadable()) {
-                    buf.append(content.toString(CharsetUtil.UTF_8));
+                	byte[] data = new byte[content.readableBytes()];
+//                    buf.append(content.toString(CharsetUtil.UTF_8));
+                	content.getBytes(0, data);
+                	buf.put(data);
+//                	buf.put(content.array());
                 }
                 
                 if (msg instanceof LastHttpContent) {
-                    String logInput = buf.toString();
-                    logger.debug("Input json: " + logInput);
+//                    String logInput = buf.toString();
+//                    logger.debug("Input json: " + logInput);
                     
-//                    String jsonInput = CryptHelper.decrypt(logInput, conf.getCryptKey());
-//                    logger.debug("decrypted: " + jsonInput);
-                    String jsonInput = logInput;
+                	if(buf.position() == 0){
+                		logger.info("data empty, return.");
+                		NettyResponse.write(ctx.channel(), Configuration.RES_CODE_INPUT_INVALID, "data empty.", request);
+                		return;
+                	}
+                	
+                	byte[] contentBytes = new byte[buf.position()];
+                	for(int i = 0; i < buf.position(); i++)
+                	    contentBytes[i] = buf.array()[i];
+                	
+                    String jsonInput = CryptHelper.decrypt(contentBytes, conf.getCryptKey());
+//                    String jsonInput = logInput;
                     if(jsonInput == null) {
-                    	logger.error("Decrypt failed," + logInput);
+                    	logger.error("Decrypt failed(base64)," + new String(CryptHelper.base64Encode(contentBytes)));
                     	NettyResponse.write(ctx.channel(), Configuration.RES_CODE_INPUT_INVALID, "Decrypt failed.", request);
                     	return;
                     }
+                    logger.debug("$input_decrypted: " + jsonInput);
                     
                     if(!checkInput(jsonInput)) {
                     	NettyResponse.write(ctx.channel(), Configuration.RES_CODE_INPUT_INVALID, "Input is not a json.", request);
