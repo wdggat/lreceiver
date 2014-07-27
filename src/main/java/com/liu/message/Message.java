@@ -8,6 +8,7 @@ import com.liu.helper.Utils;
 public class Message implements Comparable<Message> {
 	private static final String EMPTY_SUBJECT = "";
 	private String from;
+	private String fromUid;
 	private String to;
 	private String subject;
 	private long time;
@@ -20,6 +21,14 @@ public class Message implements Comparable<Message> {
 
 	public void setFrom(String from) {
 		this.from = from;
+	}
+
+	public String getFromUid() {
+		return fromUid;
+	}
+
+	public void setFromUid(String fromUid) {
+		this.fromUid = fromUid;
 	}
 
 	public String getTo() {
@@ -75,10 +84,11 @@ public class Message implements Comparable<Message> {
 	 * @param time
 	 *            Unix epoch time, length_10
 	 */
-	public Message(String from, String to, String subject, long time,
+	public Message(String from, String fromUid, String to, String subject, long time,
 			String content, DataType dataType) {
 		super();
 		this.from = from;
+		this.fromUid = fromUid;
 		this.to = to;
 		this.subject = subject;
 		this.time = time;
@@ -100,9 +110,17 @@ public class Message implements Comparable<Message> {
 		return time > anotherTime ? 1 : (time == anotherTime ? 0 : -1);
 	}
 
-	public static Message quickMessage(String from, String to, String content) {
-		return new Message(from, to, EMPTY_SUBJECT,
+	public static Message quickMessage(String from, String fromUid, String to, String content) {
+		return new Message(from, fromUid, to, EMPTY_SUBJECT,
 				System.currentTimeMillis() / 1000, content, DataType.QUICK_MSG);
+	}
+	
+	public static Message getFromInputJson(String inputJson) {
+		return JSON.parseObject(inputJson, Message.class);
+	}
+
+	public boolean isFromEmail() {
+		return from.contains("@");
 	}
 	
 	public boolean isSentBy(String uname) {

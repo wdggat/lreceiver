@@ -68,7 +68,7 @@ public class Dispatcher {
     private static Response dispatchEvent(DataType dataType, String inputContent) {
     	Event event = JSON.parseObject(inputContent, Event.class);
         if (event == null) {
-            logger.debug("Invalid input parameters, can't parse to ShortMsgRequest, " + inputContent);
+            logger.debug("Invalid input parameters, can't parse to Event, " + inputContent);
             return NettyResponse.genResponse(Configuration.RES_CODE_INPUT_INVALID,
                      "Invalid input parameters");
         }
@@ -80,14 +80,16 @@ public class Dispatcher {
         	if(!StringUtils.isEmpty(userJson)) {
         		User user = User.fromJsonStr(userJson);
         		if(user.getPassword().equals(event.getEntry(Event.PASSWORD)))
-        			return NettyResponse.genResponse(Configuration.RES_CODE_SUCC, "");
+        			return NettyResponse.genResponse(Configuration.RES_CODE_SUCC, userJson);
         	}
         	return NettyResponse.genResponse(Configuration.RES_CODE_INPUT_INVALID, "Username or password incorrect");
         } else if(dataType.equals(DataType.REGIST)) {
 			if (RedisHelper.existUinfoCache(event.getEntry(Event.USERNAME)) == RedisHelper.REDIS_KEY_NOT_EXISTS) {
 				User newUser = User.fromJsonStr(event.getEntry(Event.USER));
+				String userid = Users.generateUid(newUser.getEmail());
+				newUser.setUid(userid);
 				if (Users.addUser(newUser)) {
-					return NettyResponse.genResponse(Configuration.RES_CODE_SUCC, "");
+					return NettyResponse.genResponse(Configuration.RES_CODE_SUCC, newUser.toJson());
 				}
 				return NettyResponse.genResponse(Configuration.RES_CODE_SERVER_ERROR, "Sorry, 内部错误.");
 			}
@@ -102,8 +104,9 @@ public class Dispatcher {
         	        Users.insertOnDuplicateUser(user);
         	        return NettyResponse.genResponse(Configuration.RES_CODE_SUCC, "");
         		}
-        		NettyResponse.genResponse(Configuration.RES_CODE_INPUT_INVALID, "抱歉,旧密码不正确.");
+        		return NettyResponse.genResponse(Configuration.RES_CODE_INPUT_INVALID, "抱歉,旧密码不正确.");
         	}
+        	return NettyResponse.genResponse(Configuration.RES_CODE_SERVER_ERROR, "Sorry, 再试一次?");
         } else if(dataType.equals(DataType.PASSWORD_FORGET)) {
         	String to = event.getEntry(Event.USERNAME);
         	User user = User.fromJsonStr(RedisHelper.getUinfoCache(to));
@@ -117,7 +120,8 @@ public class Dispatcher {
         	baiduUinfo.add(baiduUserId);
         	baiduUinfo.add(baiduChannelId);
         	if(RedisHelper.setBaiduUserCache(username, baiduUinfo))
-        		NettyResponse.genResponse(Configuration.RES_CODE_SUCC, "");
+        		return NettyResponse.genResponse(Configuration.RES_CODE_SUCC, "");
+        	return NettyResponse.genResponse(Configuration.RES_CODE_SERVER_ERROR, "Sorry, 再试一次?");
         }
         return NettyResponse.genResponse(Configuration.RES_CODE_INPUT_INVALID, "数据类型错误.");
     }

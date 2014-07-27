@@ -127,7 +127,7 @@ public class MessageServerHandler extends ChannelInboundHandlerAdapter {
                     	NettyResponse.write(ctx.channel(), Configuration.RES_CODE_INPUT_INVALID, "Decrypt failed.", request);
                     	return;
                     }
-                    logger.debug("$input_decrypted: " + jsonInput);
+                    logger.info("$input_decrypted: " + jsonInput);
                     
                     if(!checkInput(jsonInput)) {
                     	NettyResponse.write(ctx.channel(), Configuration.RES_CODE_INPUT_INVALID, "Input is not a json.", request);
