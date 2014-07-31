@@ -70,7 +70,7 @@ public class Users {
 		PreparedStatement ps = null;
 		try {
 			conn = JDBCHelper.getConnection();
-			ps = conn.prepareStatement("insert into user(uid,email,password,gender,province,phone,birthday) values (?, ?, ?, ?, ?, ?, ?) on duplicate key update email=VALUES(email);");
+			ps = conn.prepareStatement("insert into user(uid,email,password,gender,province,phone,birthday) values (?, ?, ?, ?, ?, ?, ?);");
 			ps.setString(1, user.getUid());
 			ps.setString(2, user.getEmail());
 			ps.setString(3, user.getPassword());
@@ -78,9 +78,10 @@ public class Users {
 			ps.setString(5, user.getProvince());
 			ps.setString(6, user.getPhone());
 			ps.setLong(7, user.getBirthday());
-			return ps.execute();
+			ps.execute();
+			return true;
 		} catch (Exception e) {
-			logger.error("insert new user failed, " + user.toJson());
+			logger.error("insert new user failed, " + user.toJson(), e);
 			return false;
 		} finally {
 			JDBCHelper.close(null, ps);

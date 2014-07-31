@@ -88,6 +88,7 @@ public class Dispatcher {
 				User newUser = User.fromJsonStr(event.getEntry(Event.USER));
 				String userid = Users.generateUid(newUser.getEmail());
 				newUser.setUid(userid);
+				logger.info("uid assigned for username, username: " + newUser.getEmail() + ", userid: " + userid);
 				if (Users.addUser(newUser)) {
 					return NettyResponse.genResponse(Configuration.RES_CODE_SUCC, newUser.toJson());
 				}
