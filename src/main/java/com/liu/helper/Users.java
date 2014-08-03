@@ -61,8 +61,26 @@ public class Users {
 		return false;
 	}
 	
-	public static boolean insertOnDuplicateUser(User user) {
-		return insertUserIntoDb(user);
+	public static boolean updateUserInfo(User user) {
+		Connection conn;
+		PreparedStatement ps = null;
+		try {
+			conn = JDBCHelper.getConnection();
+			ps = conn.prepareStatement("UPDATE user SET password=?,gender=?,province=?,phone=?,birthday=? where email=?;");
+			ps.setString(1, user.getPassword());
+			ps.setInt(2, user.getGender());
+			ps.setString(3, user.getProvince());
+			ps.setString(4, user.getPhone());
+			ps.setLong(5, user.getBirthday());
+			ps.setString(6, user.getEmail());
+			ps.execute();
+			return true;
+		} catch (Exception e) {
+			logger.error("update user info failed, " + user.toJson(), e);
+			return false;
+		} finally {
+			JDBCHelper.close(null, ps);
+		}
 	}
 
 	private static boolean insertUserIntoDb(User user) {

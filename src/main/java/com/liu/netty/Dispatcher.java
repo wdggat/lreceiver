@@ -102,8 +102,11 @@ public class Dispatcher {
         		if (event.getEntry(Event.PASSWORD).equals(user.getPassword())) {
         			user.setPassword(event.getEntry(Event.PASSWORD_NEW));
         		    RedisHelper.setUinfoCache(username, user.toJson());
-        	        Users.insertOnDuplicateUser(user);
-        	        return NettyResponse.genResponse(Configuration.RES_CODE_SUCC, "");
+        		    if(Users.updateUserInfo(user) && RedisHelper.setUinfoCache(user.getEmail(), user.toJson())) {
+        	            logger.info("user info updated, " + user.toJson());
+        	            return NettyResponse.genResponse(Configuration.RES_CODE_SUCC, "");
+        		    }
+        		    return NettyResponse.genResponse(Configuration.RES_CODE_SERVER_ERROR, "Sorry, 再试一次?");
         		}
         		return NettyResponse.genResponse(Configuration.RES_CODE_INPUT_INVALID, "抱歉,旧密码不正确.");
         	}
