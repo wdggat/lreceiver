@@ -7,12 +7,12 @@ import com.alibaba.fastjson.JSON;
 
 public class Event {
 	public static final String EMAIL = "EMAIL";
-	public static final String USER = "USER";
-	public static final String USERNAME = "USERNAME";
-	public static final String PASSWORD = "PASSWORD";
-	public static final String PASSWORD_NEW = "PASSWORD_NEW";
-	public static final String BAIDU_USERID = "BAIDU_USERID";
-	public static final String BAIDU_CHANNELID = "BAIDU_CHANNELID";
+	public static final String USER = "UID";
+	public static final String USERNAME = "UNAME";
+	public static final String PASSWORD = "PW";
+	public static final String PASSWORD_NEW = "PW_NEW";
+	public static final String BAIDU_USERID = "BD_UID";
+	public static final String BAIDU_CHANNELID = "BD_CID";
 	public Event() {}
 
 	public Event(DataType dataType) {

@@ -86,9 +86,7 @@ public class Dispatcher {
         } else if(dataType.equals(DataType.REGIST)) {
 			if (RedisHelper.existUinfoCache(event.getEntry(Event.USERNAME)) == RedisHelper.REDIS_KEY_NOT_EXISTS) {
 				User newUser = User.fromJsonStr(event.getEntry(Event.USER));
-				String userid = Users.generateUid(newUser.getEmail());
-				newUser.setUid(userid);
-				logger.info("uid assigned for username, username: " + newUser.getEmail() + ", userid: " + userid);
+//				logger.info("uid assigned for username, username: " + newUser.getEmail() + ", userid: " + userid);
 				if (Users.addUser(newUser)) {
 					return NettyResponse.genResponse(Configuration.RES_CODE_SUCC, newUser.toJson());
 				}
@@ -118,12 +116,13 @@ public class Dispatcher {
         	return NettyResponse.genResponse(Configuration.RES_CODE_SUCC, "");
         } else if(dataType.equals(DataType.BAIDU_PUSH_BIND)) {
         	String username = event.getEntry(Event.USERNAME);
+        	String uid = event.getEntry(Event.USER);
         	String baiduUserId = event.getEntry(Event.BAIDU_USERID);
         	String baiduChannelId = event.getEntry(Event.BAIDU_CHANNELID);
         	List<String> baiduUinfo = new ArrayList<String>();
         	baiduUinfo.add(baiduUserId);
         	baiduUinfo.add(baiduChannelId);
-        	if(RedisHelper.setBaiduUserCache(username, baiduUinfo))
+        	if(RedisHelper.setBaiduUserCacheUname(username, baiduUinfo) && RedisHelper.setBaiduUserCacheUid(uid, baiduUinfo))
         		return NettyResponse.genResponse(Configuration.RES_CODE_SUCC, "");
         	return NettyResponse.genResponse(Configuration.RES_CODE_SERVER_ERROR, "Sorry, 再试一次?");
         }

@@ -3,6 +3,7 @@ package com.liu.helper;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -50,7 +51,11 @@ public class Users {
 	}
 
 	public static boolean addUser(User user) {
-		if (insertUserIntoDb(user)) {
+		long uid = insertUserIntoDb(user);
+		if(uid == 0 || uid == -1) {
+			return false;
+		} else {
+			user.setUid(uid + "");
 			if (RedisHelper.setUinfoCache(user.getEmail(), user.toJson())) {
 				logger.info("New user added, " + user.toJson());
 				return true;
@@ -58,7 +63,6 @@ public class Users {
 			logger.info("New user added into db, but not cached, " + user.toJson());
 			return true;
 		}
-		return false;
 	}
 	
 	public static boolean updateUserInfo(User user) {
@@ -83,12 +87,12 @@ public class Users {
 		}
 	}
 
-	private static boolean insertUserIntoDb(User user) {
+	private static long insertUserIntoDb(User user) {
 		Connection conn;
 		PreparedStatement ps = null;
 		try {
 			conn = JDBCHelper.getConnection();
-			ps = conn.prepareStatement("insert into user(uid,email,password,gender,province,phone,birthday) values (?, ?, ?, ?, ?, ?, ?);");
+			ps = conn.prepareStatement("insert into user(email,password,gender,province,phone,birthday) values (?, ?, ?, ?, ?, ?);", Statement.RETURN_GENERATED_KEYS);
 			ps.setString(1, user.getUid());
 			ps.setString(2, user.getEmail());
 			ps.setString(3, user.getPassword());
@@ -97,15 +101,16 @@ public class Users {
 			ps.setString(6, user.getPhone());
 			ps.setLong(7, user.getBirthday());
 			ps.execute();
-			return true;
+			ResultSet rs = ps.getGeneratedKeys();
+			return rs.getLong(0);
 		} catch (Exception e) {
 			logger.error("insert new user failed, " + user.toJson(), e);
-			return false;
+			return -1;
 		} finally {
 			JDBCHelper.close(null, ps);
 		}
 	}
-
+	
 	public static String generateUid(String username) {
 		return UUID.randomUUID().toString();
 	}
