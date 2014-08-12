@@ -93,16 +93,16 @@ public class Users {
 		try {
 			conn = JDBCHelper.getConnection();
 			ps = conn.prepareStatement("insert into user(email,password,gender,province,phone,birthday) values (?, ?, ?, ?, ?, ?);", Statement.RETURN_GENERATED_KEYS);
-			ps.setString(1, user.getUid());
-			ps.setString(2, user.getEmail());
-			ps.setString(3, user.getPassword());
-			ps.setInt(4, user.getGender());
-			ps.setString(5, user.getProvince());
-			ps.setString(6, user.getPhone());
-			ps.setLong(7, user.getBirthday());
+			ps.setString(1, user.getEmail());
+			ps.setString(2, user.getPassword());
+			ps.setInt(3, user.getGender());
+			ps.setString(4, user.getProvince());
+			ps.setString(5, user.getPhone());
+			ps.setLong(6, user.getBirthday());
 			ps.execute();
 			ResultSet rs = ps.getGeneratedKeys();
-			return rs.getLong(0);
+			rs.next();
+			return rs.getLong(1);
 		} catch (Exception e) {
 			logger.error("insert new user failed, " + user.toJson(), e);
 			return -1;
