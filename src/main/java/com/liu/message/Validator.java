@@ -48,7 +48,7 @@ public class Validator {
 	}
 
 	public static boolean checkMessage(Message msg) {
-		return msg != null && StringUtils.isBlank(msg.getContent()) && StringUtils.isBlank(msg.getTo()) && StringUtils.isBlank(msg.getFrom());
+		return msg != null && !StringUtils.isBlank(msg.getContent()) && !StringUtils.isBlank(msg.getTo()) && !StringUtils.isBlank(msg.getFrom());
 	}
 
 }

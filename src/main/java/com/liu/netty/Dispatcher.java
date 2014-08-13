@@ -47,6 +47,8 @@ public class Dispatcher {
                      "Invalid input parameters");
         }
         
+        normMessage(msg);
+        
         try {
             logger.debug("MSG queue in ...");
             boolean enqueueResult = QueueHelper.enqueue(msg);
@@ -127,6 +129,14 @@ public class Dispatcher {
         	return NettyResponse.genResponse(Configuration.RES_CODE_SERVER_ERROR, "Sorry, 再试一次?");
         }
         return NettyResponse.genResponse(Configuration.RES_CODE_INPUT_INVALID, "数据类型错误.");
+    }
+    
+    private static void normMessage(Message msg) {
+    	msg.setContent(msg.getContent().trim());
+    	msg.setFrom(msg.getFrom().trim());
+    	msg.setFromUid(msg.getFromUid().trim());
+    	msg.setSubject(msg.getSubject().trim());
+    	msg.setTo(msg.getTo().trim());
     }
 }
 
