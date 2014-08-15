@@ -15,7 +15,8 @@ import com.liu.message.User;
 public class Users {
 	private static final Logger logger = Logger.getLogger(Users.class);
 
-	public static boolean init() {
+	// no need
+	/*public static boolean init() {
 		try {
 			List<User> users = readAllUsers();
 			for (User user : users) {
@@ -27,7 +28,7 @@ public class Users {
 			logger.error("Exception when initing Users", e);
 			return false;
 		}
-	}
+	}*/
 
 	private static List<User> readAllUsers() throws Exception {
 		List<User> users = new ArrayList<User>();
@@ -50,7 +51,8 @@ public class Users {
 		return users;
 	}
 
-	public static boolean addUser(User user) {
+	// db then redis
+	/*public static boolean addUser(User user) {
 		long uid = insertUserIntoDb(user);
 		if(uid == 0 || uid == -1) {
 			return false;
@@ -63,6 +65,19 @@ public class Users {
 			logger.info("New user added into db, but not cached, " + user.toJson());
 			return true;
 		}
+	}*/
+	
+	public static boolean addUser(User user) {
+		long newUid = RedisHelper.incrUid();
+		if(newUid == RedisHelper.REDIS_SERVER_ERROR)
+			return false;
+		user.setUid(newUid + "");
+		if (RedisHelper.setUinfoCache(user.getEmail(), user.toJson())) {
+			insertUserIntoDb(user);
+			logger.info("New user added, " + user.toJson());
+			return true;
+		}
+		return false;
 	}
 	
 	public static boolean updateUserInfo(User user) {
@@ -87,7 +102,7 @@ public class Users {
 		}
 	}
 
-	private static long insertUserIntoDb(User user) {
+	private static boolean insertUserIntoDb(User user) {
 		Connection conn;
 		PreparedStatement ps = null;
 		try {
@@ -100,12 +115,13 @@ public class Users {
 			ps.setString(5, user.getPhone());
 			ps.setLong(6, user.getBirthday());
 			ps.execute();
-			ResultSet rs = ps.getGeneratedKeys();
-			rs.next();
-			return rs.getLong(1);
+			return true;
+//			ResultSet rs = ps.getGeneratedKeys();
+//			rs.next();
+//			return rs.getLong(1);
 		} catch (Exception e) {
 			logger.error("insert new user failed, " + user.toJson(), e);
-			return -1;
+			return false;
 		} finally {
 			JDBCHelper.close(null, ps);
 		}
