@@ -107,13 +107,14 @@ public class Users {
 		PreparedStatement ps = null;
 		try {
 			conn = JDBCHelper.getConnection();
-			ps = conn.prepareStatement("insert into user(email,password,gender,province,phone,birthday) values (?, ?, ?, ?, ?, ?);", Statement.RETURN_GENERATED_KEYS);
-			ps.setString(1, user.getEmail());
-			ps.setString(2, user.getPassword());
-			ps.setInt(3, user.getGender());
-			ps.setString(4, user.getProvince());
-			ps.setString(5, user.getPhone());
-			ps.setLong(6, user.getBirthday());
+			ps = conn.prepareStatement("insert into user(uid,email,password,gender,province,phone,birthday) values (?, ?, ?, ?, ?, ?, ?);", Statement.RETURN_GENERATED_KEYS);
+			ps.setString(1, user.getUid());
+			ps.setString(2, user.getEmail());
+			ps.setString(3, user.getPassword());
+			ps.setInt(4, user.getGender());
+			ps.setString(5, user.getProvince());
+			ps.setString(6, user.getPhone());
+			ps.setLong(7, user.getBirthday());
 			ps.execute();
 			return true;
 //			ResultSet rs = ps.getGeneratedKeys();

@@ -25,7 +25,7 @@ public class Validator {
 	}
 
 	public static boolean checkRegistEvent(Event registE) {
-		String uinfo = registE.getEntry(Event.USER);
+		String uinfo = registE.getEntry(Event.UID);
 		if(!StringUtils.isEmpty(uinfo)) {
 			User u = JSON.parseObject(uinfo, User.class);
 			return u != null;
@@ -45,10 +45,6 @@ public class Validator {
 			return false;
 		return true;
 
-	}
-
-	public static boolean checkMessage(Message msg) {
-		return msg != null && !StringUtils.isBlank(msg.getContent()) && !StringUtils.isBlank(msg.getTo()) && !StringUtils.isBlank(msg.getFrom());
 	}
 
 }

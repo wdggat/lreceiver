@@ -7,7 +7,7 @@ import com.alibaba.fastjson.JSON;
 
 public class Event {
 	public static final String EMAIL = "EMAIL";
-	public static final String USER = "UID";
+	public static final String UID = "UID";
 	public static final String USERNAME = "UNAME";
 	public static final String PASSWORD = "PW";
 	public static final String PASSWORD_NEW = "PW_NEW";

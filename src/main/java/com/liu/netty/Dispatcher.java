@@ -41,13 +41,13 @@ public class Dispatcher {
     
     private static Response dispatchMessage(DataType dataType, String inputContent) {
     	Message msg = JSON.parseObject(inputContent, Message.class);
-        if (!Validator.checkMessage(msg)) {
+        if (msg == null || !msg.isValidMessage()) {
             logger.debug("Invalid input content, " + inputContent);
             return NettyResponse.genResponse(Configuration.RES_CODE_INPUT_INVALID,
-                     "Invalid input parameters");
+                     "Invalid input");
         }
         
-        normMessage(msg);
+        msg.normalize();
         
         try {
             logger.debug("MSG queue in ...");
@@ -87,7 +87,7 @@ public class Dispatcher {
         	return NettyResponse.genResponse(Configuration.RES_CODE_INPUT_INVALID, "Username or password incorrect");
         } else if(dataType.equals(DataType.REGIST)) {
 			if (RedisHelper.existUinfoCache(event.getEntry(Event.USERNAME)) == RedisHelper.REDIS_KEY_NOT_EXISTS) {
-				User newUser = User.fromJsonStr(event.getEntry(Event.USER));
+				User newUser = User.fromJsonStr(event.getEntry(Event.UID));
 //				logger.info("uid assigned for username, username: " + newUser.getEmail() + ", userid: " + userid);
 				if (Users.addUser(newUser)) {
 					return NettyResponse.genResponse(Configuration.RES_CODE_SUCC, newUser.toJson());
@@ -114,11 +114,13 @@ public class Dispatcher {
         } else if(dataType.equals(DataType.PASSWORD_FORGET)) {
         	String to = event.getEntry(Event.USERNAME);
         	User user = User.fromJsonStr(RedisHelper.getUinfoCache(to));
+        	if(user.isNullUser())
+        		return NettyResponse.genResponse(Configuration.RES_CODE_INPUT_INVALID, "用户不存在(" + to + ")");
         	MailSender.sendSimpleMail(to, "密码通知", "Your password: " + user.getPassword());
         	return NettyResponse.genResponse(Configuration.RES_CODE_SUCC, "");
         } else if(dataType.equals(DataType.BAIDU_PUSH_BIND)) {
         	String username = event.getEntry(Event.USERNAME);
-        	String uid = event.getEntry(Event.USER);
+        	String uid = event.getEntry(Event.UID);
         	String baiduUserId = event.getEntry(Event.BAIDU_USERID);
         	String baiduChannelId = event.getEntry(Event.BAIDU_CHANNELID);
         	List<String> baiduUinfo = new ArrayList<String>();
@@ -131,12 +133,6 @@ public class Dispatcher {
         return NettyResponse.genResponse(Configuration.RES_CODE_INPUT_INVALID, "数据类型错误.");
     }
     
-    private static void normMessage(Message msg) {
-    	msg.setContent(msg.getContent().trim());
-    	msg.setFrom(msg.getFrom().trim());
-    	msg.setFromUid(msg.getFromUid().trim());
-    	msg.setSubject(msg.getSubject().trim());
-    	msg.setTo(msg.getTo().trim());
-    }
+    
 }
 
