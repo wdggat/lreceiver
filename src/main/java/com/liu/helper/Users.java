@@ -73,8 +73,12 @@ public class Users {
 			return false;
 		user.setUid(newUid + "");
 		if (RedisHelper.setUinfoCache(user.getEmail(), user.toJson())) {
-			insertUserIntoDb(user);
-			logger.info("New user added, " + user.toJson());
+			boolean insertDb = insertUserIntoDb(user);
+			//To avoid the problem, The last packet sent successfully to the server was 39,630,895 milliseconds ago.
+			//is longer than the server configured value of 'wait_timeout'.
+			if(!insertDb)
+				insertDb = insertUserIntoDb(user);
+			logger.info("New user added(redis(Y) & mysql(" + insertDb + ")), " + user.toJson());
 			return true;
 		}
 		return false;
