@@ -42,18 +42,15 @@ public class MessageServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
-        logger.debug("Channel is active");
         ctx.attr(IS_AUTH).set(false);
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
-        logger.debug("Channel is inactive");
     }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
-        logger.debug("Receive message in Server");
         ctx.attr(IS_AUTH).set(false);
         boolean done = false;
         try {
@@ -70,7 +67,6 @@ public class MessageServerHandler extends ChannelInboundHandlerAdapter {
                 buf.clear();
 
                 if (request.getMethod().equals(HttpMethod.GET)) {
-                    logger.info("HTTP method GET is not supported by this URL");
                     NettyResponse.write(ctx.channel(), Configuration.RES_CODE_INPUT_INVALID,
                              "HTTP method GET is not supported by this URL", request);
                     done = true;
@@ -79,7 +75,6 @@ public class MessageServerHandler extends ChannelInboundHandlerAdapter {
 
                 String contentType = request.headers().get(CONTENT_TYPE);
                 if (contentType == null || !contentType.contains("application/x-gzip")) {
-                    logger.info("Content-Type is not application/x-gzip");
                     NettyResponse.write(ctx.channel(), Configuration.RES_CODE_INPUT_INVALID,
                              "Content-Type is not application/x-gzip", request);
                     done = true;
@@ -88,7 +83,6 @@ public class MessageServerHandler extends ChannelInboundHandlerAdapter {
             }
 
             if (msg instanceof HttpContent) {
-                logger.debug("Get Http request content");
                 if(done) {
                 	logger.debug("http head error, body dropped.");
                 	return;
@@ -97,7 +91,6 @@ public class MessageServerHandler extends ChannelInboundHandlerAdapter {
                 HttpContent httpContent = (HttpContent)msg;
                 ByteBuf content = httpContent.content();
                 
-                logger.debug("$content.readableBytes() = " + content.readableBytes());
                 if (content.isReadable()) {
                 	byte[] data = new byte[content.readableBytes()];
 //                    buf.append(content.toString(CharsetUtil.UTF_8));
@@ -111,7 +104,6 @@ public class MessageServerHandler extends ChannelInboundHandlerAdapter {
 //                    logger.debug("Input json: " + logInput);
                     
                 	if(buf.position() == 0){
-                		logger.info("data empty, return.");
                 		NettyResponse.write(ctx.channel(), Configuration.RES_CODE_INPUT_INVALID, "data empty.", request);
                 		return;
                 	}

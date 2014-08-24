@@ -56,7 +56,6 @@ public class NettyResponse {
         // Close the connection after the write operation is done if necessary
         if (!close) {
             future.addListener(ChannelFutureListener.CLOSE);
-            logger.debug("Channel is closed");
         }
     }
 

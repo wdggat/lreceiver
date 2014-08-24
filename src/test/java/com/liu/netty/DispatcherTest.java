@@ -14,7 +14,7 @@ public class DispatcherTest {
 		RedisHelper.init(conf.getRedisServerMaster(), conf.getRedisServerSlave());
 		JDBCHelper.init(conf.getDbDriver(), conf.getMysqlUrl(), conf.getMysqlUsername(), conf.getMysqlPassword());
 		
-		String testInput = "{\"dataType\":\"REGIST\",\"jsonStr\":\"{\\\"dataType\\\":\\\"REGIST\\\",\\\"entrys\\\":{\\\"USER\\\":\\\"{\\\\\\\"birthday\\\\\\\":641653640,\\\\\\\"email\\\\\\\":\\\\\\\"test@163.com\\\\\\\",\\\\\\\"gender\\\\\\\":0,\\\\\\\"password\\\\\\\":\\\\\\\"wdggat094807\\\\\\\",\\\\\\\"phone\\\\\\\":\\\\\\\"15024405406\\\\\\\",\\\\\\\"province\\\\\\\":\\\\\\\"杭州\\\\\\\",\\\\\\\"uid\\\\\\\":\\\\\\\"\\\\\\\"}\\\"}}\"}";
+		String testInput = "{\"dataType\":\"REGIST\",\"jsonStr\":\"{\\\"dataType\\\":\\\"REGIST\\\",\\\"entrys\\\":{\\\"UID\\\":\\\"{\\\\\\\"birthday\\\\\\\":641653640,\\\\\\\"email\\\\\\\":\\\\\\\"test@163.com\\\\\\\",\\\\\\\"gender\\\\\\\":0,\\\\\\\"password\\\\\\\":\\\\\\\"wdggat094807\\\\\\\",\\\\\\\"phone\\\\\\\":\\\\\\\"15024405406\\\\\\\",\\\\\\\"province\\\\\\\":\\\\\\\"杭州\\\\\\\",\\\\\\\"uid\\\\\\\":\\\\\\\"\\\\\\\"}\\\"}}\"}";
 		Response res = Dispatcher.dispatch(testInput);
 		System.out.println(res.toString());
 	}

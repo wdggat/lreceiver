@@ -86,8 +86,8 @@ public class Dispatcher {
         	}
         	return NettyResponse.genResponse(Configuration.RES_CODE_INPUT_INVALID, "Username or password incorrect");
         } else if(dataType.equals(DataType.REGIST)) {
-			if (RedisHelper.existUinfoCache(event.getEntry(Event.USERNAME)) == RedisHelper.REDIS_KEY_NOT_EXISTS) {
-				User newUser = User.fromJsonStr(event.getEntry(Event.UID));
+        	User newUser = User.fromJsonStr(event.getEntry(Event.UID));
+			if (RedisHelper.existUinfoCache(newUser.getEmail()) == RedisHelper.REDIS_KEY_NOT_EXISTS) {
 //				logger.info("uid assigned for username, username: " + newUser.getEmail() + ", userid: " + userid);
 				if (Users.addUser(newUser)) {
 					return NettyResponse.genResponse(Configuration.RES_CODE_SUCC, newUser.toJson());
