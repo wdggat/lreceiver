@@ -40,7 +40,7 @@ def get_topN_profit(sp_arr, topN):
 	c += 1
 	if c % 10000000 == 0:
 	    print 'c : %d' % c
-        profit = Profit.get_from_sparr(sp_arr, buy_arr)
+        profit = Profit.get_from_sparr(sp_arr, buy_arr, multiple=1)
 	if not profit.qualified():
 	    continue
 	else:
