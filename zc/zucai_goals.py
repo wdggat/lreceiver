@@ -5,18 +5,24 @@ from profit import Profit
 from datetime import datetime
 import sp_checker
     
-BUY_MAX = 10
+BUY_MAX = 100
+
+#def _get_all_buyarrs(buy_max):
+#    for goal0 in range(1, buy_max+1):
+#        for goal1 in range(1, buy_max+1):
+#            for goal2 in range(1, buy_max+1):
+#                for goal3 in range(1, buy_max+1):
+#                    for goal4 in range(1, buy_max+1):
+#                        for goal5 in range(1, buy_max+1):
+#                            for goal6 in range(1, buy_max+1):
+#                                for goal7_plus in range(1, buy_max+1):
+#                                    yield [goal0, goal1, goal2, goal3, goal4, goal5, goal6, goal7_plus]
 
 def _get_all_buyarrs(buy_max):
     for goal0 in range(1, buy_max+1):
         for goal1 in range(1, buy_max+1):
             for goal2 in range(1, buy_max+1):
-                for goal3 in range(1, buy_max+1):
-                    for goal4 in range(1, buy_max+1):
-                        for goal5 in range(1, buy_max+1):
-                            for goal6 in range(1, buy_max+1):
-                                for goal7_plus in range(1, buy_max+1):
-                                    yield [goal0, goal1, goal2, goal3, goal4, goal5, goal6, goal7_plus]
+	        yield [goal0, goal1, goal2]
 
 def get_topN_profit(sp_arr, topN):
     if any([True for sp in sp_arr if sp <= 0]):
@@ -35,7 +41,7 @@ def get_topN_profit(sp_arr, topN):
 	if c % 10000000 == 0:
 	    print 'c : %d' % c
         profit = Profit.get_from_sparr(sp_arr, buy_arr)
-	if not profit.all_positive():
+	if not profit.qualified():
 	    continue
 	else:
 	    profits.append(profit)
