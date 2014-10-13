@@ -17,7 +17,7 @@ def _get_all_buyarrs(buy_max, length, buy_min=0):
 	        buy_arr[0-i] += 1
 		break
 
-def get_topN_profit(sp_arr, topN, profit_multiple=2, buy_max=BUY_MAX):
+def get_topN_profit(sp_arr, topN, profit_multiple=2, buy_max=BUY_MAX, buy_min=0):
     if any([True for sp in sp_arr if sp <= 0]):
         print 'someone negative, drop.'
         return []
@@ -29,7 +29,7 @@ def get_topN_profit(sp_arr, topN, profit_multiple=2, buy_max=BUY_MAX):
 #	return []
 
     profits, c = [], 0
-    for buy_arr in _get_all_buyarrs(buy_max, len(sp_arr)):
+    for buy_arr in _get_all_buyarrs(buy_max, len(sp_arr), buy_min=buy_min):
 	c += 1
 	if c % 10000000 == 0:
 	    print 'c : %d, %s' % (c, datetime.now())
@@ -42,12 +42,12 @@ def get_topN_profit(sp_arr, topN, profit_multiple=2, buy_max=BUY_MAX):
     sorted_profits = sorted(profits, reverse=True)
     return sorted_profits[0:topN]
 
-def get_topN_profit_2s1(sp_arra, sp_arrb, topN, buy_max=BUY_MAX):
+def get_topN_profit_2s1(sp_arra, sp_arrb, topN, buy_max=BUY_MAX, buy_min=0):
     sp_arr = []
     for sp_a in sp_arra:
         for sp_b in sp_arrb:
 	    sp_arr.append(sp_a * sp_b)
 
     print 'sp_a: %s, sp_b: %s' % (sp_arra, sp_arrb)
-    return get_topN_profit(sp_arr, topN, buy_max=buy_max)
+    return get_topN_profit(sp_arr, topN, buy_max=buy_max, buy_min=buy_min)
     

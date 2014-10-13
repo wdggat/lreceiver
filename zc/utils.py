@@ -2,6 +2,7 @@
 
 from datetime import datetime
 import os
+import time
 
 def make_datetime(sec):
     if len(str(sec)) == 13: 
@@ -15,3 +16,7 @@ def writelines(lines, path, mode = 'w'):
         out.write(str(line).strip() + os.linesep)
     out.close()
 		    
+def execute(command):
+    print 'Execute --> %s' % command
+    return subprocess.check_output(command, stderr=subprocess.STDOUT, shell=True)
+

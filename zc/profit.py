@@ -17,7 +17,7 @@ class Profit():
 	for p in self.profit:
 	    if p < 0:
 	        neg += 1
-	return neg <= 1
+	return neg <= 0
 
     def __cmp__(self, other):
 	return self.weight() - other.weight()

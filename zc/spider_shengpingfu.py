@@ -27,7 +27,7 @@ def decode(content):
 	for spem in col_sp.findAll('em'):
 	    if spem == None or not spem.has_attr('sp'):
 	        break
-	    sps.append(spem['sp'])
+	    sps.append(float(spem['sp'].encode('utf-8')))
 	if len(sps) <= 5:
 	    continue
 	g = [hostname, guestname, leaguename, starttime, concede1, concede2]
@@ -35,12 +35,13 @@ def decode(content):
 	games.append(g)
     return games
 
+def spide():
+    content = urllib.urlopen(URL).read()
+    return decode(content)
 
 def main():
-    content = urllib.urlopen(URL).read()
     #content = open('shengpingfu_2s1_20141011.html')
-    games = decode(content)
-    for game in games:
+    for game in spide():
         print '\t'.join([str(g) for g in game])
 
 if __name__ == '__main__':
