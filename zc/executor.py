@@ -18,11 +18,11 @@ def main():
 	print str(g2)
         for sp_arra in (g1.sp_arr1, g1.sp_arr2):
 	    for sp_arrb in (g2.sp_arr1, g2.sp_arr2):
-	        profits = zc.get_topN_profit_2s1(sp_arra, sp_arrb, 10, buy_max=6, buy_min=1)
+	        profits = zc.get_topN_profit_2s1(sp_arra, sp_arrb, 10, buy_max=7, buy_min=0)
 		for p in profits:
 		    print str(p)
 		if len(profits) > 0:
-		    c = "%s - %s\t%s\t%s - %s\t%s -- %s" % (g1.hostname,g1.guestname, str(sp_arra), g2.hostname, g2.guestname, str(sp_arrb), str(profits))
+		    c = "%s - %s\t%s\t%s - %s\t%s -- %s" % (g1.hostname,g1.guestname, str(sp_arra), g2.hostname, g2.guestname, str(sp_arrb), ' ** '.join([str(profit) for profit in profits]))
 		    catched.append(c)
         if len(catched) > 0:
 	    notifier.notify(catched)

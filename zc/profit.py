@@ -15,9 +15,9 @@ class Profit():
     def qualified(self):
         neg = 0
 	for p in self.profit:
-	    if p < 0:
+	    if p < 5:
 	        neg += 1
-	return neg <= 0
+	return neg <= 1
 
     def __cmp__(self, other):
 	return self.weight() - other.weight()
