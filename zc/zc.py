@@ -33,6 +33,21 @@ def _get_all_buyarrs8(buy_max, buy_min):
                                 for a8 in range(buy_min, buy_max+1):
                                     yield [a1,a2,a3,a4,a5,a6,a7,a8]
 
+def _get_all_buyarrs12(buy_max, buy_min):
+    for a1 in range(buy_min, buy_max+1):
+        for a2 in range(buy_min, buy_max+1):
+            for a3 in range(buy_min, buy_max+1):
+                for a4 in range(buy_min, buy_max+1):
+                    for a5 in range(buy_min, buy_max+1):
+                        for a6 in range(buy_min, buy_max+1):
+                            for a7 in range(buy_min, buy_max+1):
+                                for a8 in range(buy_min, buy_max+1):
+                                    for a9 in range(buy_min, buy_max+1):
+                                        for a10 in range(buy_min, buy_max+1):
+                                            for a11 in range(buy_min, buy_max+1):
+                                                for a12 in range(buy_min, buy_max+1):
+					            yield [a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11,a12]
+
 ########################
 
 def _get_all_buyarrs(buy_max, length, buy_min=0):
@@ -41,6 +56,9 @@ def _get_all_buyarrs(buy_max, length, buy_min=0):
 	    yield b
     elif length == 8:
         for b in _get_all_buyarrs8(buy_max, buy_min):
+	    yield b
+    elif length == 12:
+        for b in _get_all_buyarrs12(buy_max, buy_min):
 	    yield b
     else:
         buy_arr = [buy_min for i in range(0, length)]

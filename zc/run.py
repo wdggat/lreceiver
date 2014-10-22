@@ -19,6 +19,11 @@ def _2s1(sps):
     for profit in profits:
         print str(profit)
 
+def score(sp_arr):
+    profits = zc.get_topN_profit(sp_arr, 20, profit_multiple=2,buy_max=4, buy_min=1)
+    for profit in profits:
+        print str(profit)
+
 def main(argv):
     jobname = argv[1]
     sps = [float(sp) for sp in argv[2:]]
@@ -26,6 +31,8 @@ def main(argv):
         return danchang(sps)
     elif jobname == '2s1':
         return _2s1(sps)
+    elif jobname == 'score':
+        return score(sps)
     else:
         return print_usage()
 

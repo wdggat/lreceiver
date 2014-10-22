@@ -9,8 +9,15 @@ cost: 2 * ( a1 + a2 + ... + an)
 ->  1/s1 + 1/s2 + ... + 1/sn <= 1 (必要不充分条件)
 """
 
+import sys
+
 def check(sp_arr):
     s = sum([ 1 / float(sp) for sp in sp_arr])
     print 'sp check value: %f' % s
     return s,s <= 1
+
+if __name__=='__main__':
+    sps = [float(i) for i in sys.argv[1:]]
+    s,legal = check(sps)
+    print s,legal
 
